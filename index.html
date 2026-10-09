@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Въпросник преди среща</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<style>
+:root{--bg:#f6f5f0;--card:#ffffff;--ink:#1f2937;--muted:#6b7280;--line:#e4e1d6;--accent:#1f6f5b;--accent-soft:#dcece6;--accent-ink:#ffffff;--warn:#b45309;--warn-soft:#fdf1dc}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181a;--card:#1d2124;--ink:#e8e6df;--muted:#9aa0a6;--line:#2f3539;--accent:#4fb596;--accent-soft:#1f3a33;--accent-ink:#0e1513;--warn:#e0a458;--warn-soft:#3a2d17}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 80px}
+header.top{padding:28px 0 8px}
+.brand{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:24px;margin:6px 0 6px;font-weight:650;letter-spacing:-.01em}
+.lead{color:var(--muted);margin:0 0 16px;max-width:62ch}
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+label.f{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+input[type=text],select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+textarea{min-height:72px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.how{background:var(--accent-soft);border-radius:12px;padding:12px 14px;font-size:13.5px;margin-bottom:6px}
+.how b{font-weight:650}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.bar-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-flex;gap:6px;align-items:center;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);text-decoration:none;font-size:13px}
+.chip .n{color:var(--muted);font-variant-numeric:tabular-nums}
+.chip.done{border-color:var(--accent);background:var(--accent-soft)}
+.track{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:9px}
+.fill{height:100%;background:var(--accent);width:0;transition:width .25s}
+.total{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+section.area{margin-bottom:28px}
+section.area>h2{font-size:18px;margin:0 0 4px;font-weight:650}
+.area-sub{color:var(--muted);font-size:13px;margin:0 0 12px}
+.proc{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.proc>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;gap:10px;align-items:baseline}
+.proc>summary::-webkit-details-marker{display:none}
+.proc>summary::before{content:"▸";color:var(--muted);font-size:12px}
+.proc[open]>summary::before{content:"▾"}
+.proc .pt{font-weight:600}
+.proc .pc{margin-left:auto;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.proc.done .pc{color:var(--accent);font-weight:600}
+.proc .pd{padding:0 14px 8px 34px;color:var(--muted);font-size:13px;margin-top:-4px}
+.q{border-top:1px solid var(--line);padding:14px}
+.qh{display:flex;gap:10px}
+.qid{font:11px ui-monospace,Menlo,Consolas,monospace;color:var(--muted);padding-top:3px;min-width:62px}
+.qt{font-weight:550;margin-bottom:9px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.opt span{display:inline-block;padding:7px 13px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-size:14px;line-height:1.35}
+.opt input:hover+span{border-color:var(--accent)}
+.opt input:checked+span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.opt input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.opt.sub span{border-style:dashed;color:var(--muted)}
+.opt.sub input:checked+span{background:var(--muted);border-color:var(--muted);color:var(--bg)}
+.extra{margin-top:9px}
+.extra.need textarea{border-color:var(--warn);background:var(--warn-soft)}
+.hint{font-size:12px;color:var(--warn);margin-top:4px}
+.lnk{background:none;border:0;color:var(--accent);font:inherit;font-size:13px;cursor:pointer;padding:0;margin-top:8px}
+.lnk:hover{text-decoration:underline}
+.sendbox{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:8px}
+.sendbox h2{margin:0 0 6px;font-size:18px}
+.btn{font:inherit;font-weight:600;border-radius:9px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);padding:9px 16px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.msg{font-size:13px;color:var(--muted);margin-top:8px;min-height:18px}
+.missing{font-size:13px;color:var(--warn);margin:8px 0 0}
+@media (max-width:560px){.qid{display:none}.proc .pd{padding-left:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="brand" id="brand">ITC Consult · Въпросник преди среща</div>
+  <h1 id="title">Въпросник преди среща</h1>
+  <p class="lead">Благодарим за интереса! С няколко въпроса ще подготвим срещата така, че да ви покажем неща, които са от значение за вас, а не общо демо. Не търсим технически детайли – отговаряйте накратко и както е в действителност. Ако не сте сигурни, оставете въпроса – ще го обсъдим на срещата.</p>
+  <div class="info">
+    <div><label class="f" for="mClient">Фирма</label><input type="text" id="mClient" data-m="client"></div>
+    <div><label class="f" for="mName">Попълва (име)</label><input type="text" id="mName" data-m="respondent"></div>
+    <div><label class="f" for="mRole">Длъжност / роля</label><input type="text" id="mRole" data-m="role"></div>
+  </div>
+  <div class="how"><b>Как се попълва:</b> изберете отговор или напишете няколко думи. Под всеки въпрос можете да добавите коментар. Отговорите се запазват автоматично в този браузър – може да прекъснете и да продължите по-късно от същия компютър. Накрая натиснете „Изпрати отговорите“ – ще се отвори имейл към нас с прикачен Excel файл.</div>
+</header>
+
+<div class="bar" id="bar">
+  <div class="bar-row" id="chips"></div>
+  <div class="track"><div class="fill" id="fill"></div></div>
+</div>
+
+<main id="main"></main>
+
+<div class="sendbox" id="send">
+  <h2>Готово? Изпратете ни отговорите</h2>
+  <div class="missing" id="missing"></div>
+  <p class="lead" style="margin:0">Натиснете бутона – ще подготвим имейл към вашия консултант от ITC с прикачен Excel файл с отговорите. Не е нужно всичко да е попълнено – липсващото ще обсъдим на срещата.</p>
+  <div class="row">
+    <button class="btn" id="sendBtn">✉ Изпрати отговорите</button>
+    <button class="btn ghost" id="clearBtn">Изчисти всички отговори</button>
+  </div>
+  <div class="msg" id="msg"></div>
+  <div class="how" id="sendOpts" style="display:none;margin-top:10px"></div>
+  <div style="margin-top:8px"><button class="lnk" id="dlOnly" type="button">Пощата не се отвори? Изтеглете файла и го изпратете ръчно</button></div>
+</div>
+</div>
+
+<script>
+const FORM = {"id": "predi-sreshta", "version": 1, "client": "", "areas": [{"code": "FRM", "name": "За фирмата", "title": "За фирмата", "sub": "Накратко за фирмата — размер, дейност и къде работите.", "processes": [{"id": "FRM", "title": "За фирмата", "desc": "", "questions": [{"id": "PQ-01", "text": "Уебсайт на фирмата", "type": "Текст", "options": []}, {"id": "PQ-02", "text": "Каква е основната ви дейност?", "type": "Множествен избор", "options": ["Производство", "Търговия на едро и дистрибуция", "Търговия на дребно", "Сервиз и услуги", "Строителство", "Друго"]}, {"id": "PQ-03", "text": "Колко души работят във фирмата?", "type": "Избор", "options": ["До 9", "10–25", "26–50", "51–100", "Над 100"]}, {"id": "PQ-04", "text": "Колко от тях ще работят със системата?", "type": "Избор", "options": ["До 5", "6–15", "16–30", "Над 30"]}, {"id": "PQ-05", "text": "Какъв е годишният ви оборот (ориентировъчно)?", "type": "Избор", "options": ["До 1 млн. €", "1–5 млн. €", "5–12 млн. €", "12–25 млн. €", "Над 25 млн. €", "Предпочитам да не посочвам"]}, {"id": "PQ-06", "text": "Къде работят фирмата и клиентите ви?", "type": "Множествен избор", "options": ["България", "Балканите", "Страни от ЕС", "Извън ЕС"]}]}]}, {"code": "WHY", "name": "Защо сега", "title": "Защо сега", "sub": "Какво ви кара да търсите решение точно сега.", "processes": [{"id": "WHY", "title": "Защо сега", "desc": "", "questions": [{"id": "PQ-07", "text": "Какво конкретно се случи, че потърсихте нова система именно сега?", "type": "Текст", "options": []}, {"id": "PQ-08", "text": "Ако проблемът не се реши до 6 месеца, какви ще са последствията?", "type": "Текст", "options": []}, {"id": "PQ-09", "text": "Какви стъпки вече сте предприели?", "type": "Множествен избор", "options": ["Описали сме основните си процеси", "Говорили сме с други доставчици", "Определили сме бюджет", "Определили сме човек, който да води проекта", "Опитвахме да подобрим нещата със сегашната система", "Още не сме предприемали стъпки"]}]}]}, {"code": "EXP", "name": "Опит и сегашна система", "title": "Опит и сегашна система", "sub": "С какво работите днес и какъв опит имате.", "processes": [{"id": "EXP", "title": "Опит и сегашна система", "desc": "", "questions": [{"id": "PQ-10", "text": "С какво работите днес за склад, продажби, производство и счетоводство?", "type": "Текст", "options": []}, {"id": "PQ-11", "text": "Имали ли сте ERP или подобна система досега?", "type": "Избор", "options": ["Не, работим с Excel и отделни програми", "Да, работим с такава и искаме да я сменим", "Да, имахме, но преминахме на друго", "Опитвахме, но внедряването не стигна до край"]}, {"id": "PQ-12", "text": "Какво най-много ви липсва или ви пречи в сегашния начин на работа?", "type": "Текст", "options": []}]}]}, {"code": "PPL", "name": "Хора и решение", "title": "Хора и решение", "sub": "Кой ще води проекта и как се взема решението.", "processes": [{"id": "PPL", "title": "Хора и решение", "desc": "", "questions": [{"id": "PQ-13", "text": "Кой ще координира внедряването от ваша страна? (име и длъжност)", "type": "Текст", "options": []}, {"id": "PQ-14", "text": "Колко ще участва управителят или собственикът в проекта?", "type": "Избор", "options": ["Активно ще води проекта", "Ще участва в ключовите решения и ще делегира отговорен човек", "Само ще одобрява крайния резултат", "Не очакваме да участва"]}, {"id": "PQ-15", "text": "Кой взема окончателното решение за избор на система?", "type": "Избор", "options": ["Управителят или собственикът", "Управителят заедно със съдружници или борд", "Екип или комисия", "Още не е определено"]}, {"id": "PQ-16", "text": "Готови ли сте да променяте начина си на работа, ако се окаже, че процесите могат да се подобрят?", "type": "Избор", "options": ["Да, точно това искаме", "Да, но само в част от процесите", "По-скоро искаме системата да копира сегашния начин", "Не знам"]}, {"id": "PQ-17", "text": "Какво е нужно от вашия екип, за да успее внедряването?", "type": "Избор", "options": ["Редовно време на ключови хора и бързи решения", "Основно работа на консултантите, а екипът само проверява", "Не сме мислили по този въпрос"]}, {"id": "PQ-18", "text": "Как ще разберете, че внедряването е успешно?", "type": "Множествен избор", "options": ["Измеримо подобрение (време, грешки, разходи)", "Видимост и отчети във всеки момент", "Всички служители работят със системата", "Няма сериозни проблеми и спирания"]}]}]}, {"code": "BUD", "name": "Бюджет и срок", "title": "Бюджет и срок", "sub": "Ориентировъчни очаквания — не е ангажимент.", "processes": [{"id": "BUD", "title": "Бюджет и срок", "desc": "", "questions": [{"id": "PQ-19", "text": "В какъв порядък очаквате инвестицията във внедряване?", "type": "Избор", "options": ["До 10 000 €", "10 000 – 15 000 €", "15 000 – 30 000 €", "30 000 – 60 000 €", "Над 60 000 €", "Още нямаме представа"]}, {"id": "PQ-20", "text": "Кое е най-важното при избора на система и доставчик?", "type": "Избор", "options": ["Ниската цена", "Решението да пасва на нашите процеси", "Доверие и опит на доставчика", "Бързо внедряване", "Комбинация от горното"]}, {"id": "PQ-21", "text": "Кога искате да стартирате?", "type": "Избор", "options": ["До 1 месец", "След 1–3 месеца", "След 3–6 месеца", "Нямаме определен срок"]}, {"id": "PQ-22", "text": "Колко време смятате, че ще отнеме внедряването?", "type": "Избор", "options": ["До 2 месеца", "3–6 месеца", "6–12 месеца", "Не знам"]}, {"id": "PQ-23", "text": "Свързан ли е проектът с европейско финансиране?", "type": "Избор", "options": ["Не", "Да, проектът е одобрен", "Да, кандидатстваме или ще кандидатстваме", "Проучваме възможностите"]}]}]}, {"code": "SCP", "name": "Какво трябва да реши системата", "title": "Какво трябва да реши системата", "sub": "Кои звена и ситуации са най-важни за вас.", "processes": [{"id": "SCP", "title": "Какво трябва да реши системата", "desc": "", "questions": [{"id": "PQ-24", "text": "Кои звена ще работят със системата?", "type": "Множествен избор", "options": ["Продажби и клиенти", "Снабдяване", "Склад и логистика", "Производство", "Финанси и счетоводство", "Проекти и сервиз", "Друго"]}, {"id": "PQ-25", "text": "Кои 3 неща са задължителни, без които решението не върши работа за вас?", "type": "Текст", "options": []}, {"id": "PQ-26", "text": "Имате ли някое от следните?", "type": "Множествен избор", "options": ["Производство по клиентска поръчка", "Производство по рецепта (спецификация)", "Партиди, серийни номера или срок на годност", "Няколко склада или обекта", "Няколко фирми или международна отчетност", "Онлайн магазин или портал за клиенти", "Връзка с касови системи", "Връзка с банки", "Връзка с други програми", "Нищо от изброените"]}, {"id": "PQ-27", "text": "Какво очаквате да бъде пренесено от старата система?", "type": "Множествен избор", "options": ["Клиенти и доставчици", "Артикули", "Начални салда", "Историята на документите (стари фактури, поръчки, движения)", "Не знам"]}, {"id": "PQ-28", "text": "Разглеждате ли други системи или доставчици?", "type": "Избор", "options": ["Не, засега само вас", "Да, други доставчици", "Да, разработка по поръчка", "Още не сме решили"]}, {"id": "PQ-29", "text": "Какво искате да видите на презентацията? (2–3 ситуации от вашата работа)", "type": "Текст", "options": []}]}]}]};
+const FN_OPTS = ['Не е нужно','Да, стандартно','Да, с особеност','По-късно'];
+const DK = 'Не знам';
+const SUGGEST = {'Не е нужно':'Не е нужно','Да, стандартно':'MVP','Да, с особеност':'MVP (с особеност)','По-късно':'Post-MVP',[DK]:'Уточнява се'};
+const KEY = 'itc_qn_' + FORM.id;
+let S = {meta:{client:FORM.client||'',respondent:'',role:''}, a:{}};
+
+function load(){ try{ const r=localStorage.getItem(KEY); if(r){ const o=JSON.parse(r); if(o&&o.a) S=o; } }catch(e){} }
+let saveT=null;
+function flush(){ clearTimeout(saveT); saveT=null; try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+function save(){ clearTimeout(saveT); saveT=setTimeout(flush,250); }
+window.addEventListener('pagehide',flush);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') flush(); });
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function optsFor(q){
+  if(q.type==='Функция') return FN_OPTS.concat([DK]);
+  if(q.type==='Да/Не') return ['Да','Не',DK];
+  return q.options||[];
+}
+function ans(id){ return S.a[id]||(S.a[id]={v:null,c:'',o:''}); }
+function answered(q){
+  const a=S.a[q.id]; if(!a) return false;
+  if(q.type==='Множествен избор') return Array.isArray(a.v)&&a.v.length>0;
+  if(q.type==='Текст') return !!(a.v&&String(a.v).trim());
+  return !!a.v;
+}
+function needsComment(q){ const a=S.a[q.id]; return q.type==='Функция' && a && a.v==='Да, с особеност'; }
+
+function qHtml(q){
+  const a=ans(q.id); let h='';
+  h+=`<div class="q" data-q="${q.id}"><div class="qh"><div class="qid">${q.id}</div><div style="flex:1"><div class="qt">${esc(q.text)}</div>`;
+  if(q.type==='Текст'){
+    h+=`<textarea data-t="${q.id}" placeholder="Опишете накратко">${esc(a.v||'')}</textarea>`;
+  } else {
+    const multi=q.type==='Множествен избор'; const name='r_'+q.id;
+    h+='<div class="opts" role="'+(multi?'group':'radiogroup')+'">';
+    optsFor(q).forEach((o,i)=>{
+      const chk= multi ? (Array.isArray(a.v)&&a.v.includes(o)) : a.v===o;
+      h+=`<label class="opt${o===DK?' sub':''}"><input type="${multi?'checkbox':'radio'}" name="${name}" data-o="${q.id}" value="${esc(o)}"${chk?' checked':''}><span>${esc(o)}</span></label>`;
+    });
+    h+='</div>';
+    const showOther = multi && Array.isArray(a.v) && a.v.includes('Друго');
+    h+=`<div class="extra" data-other="${q.id}" style="${showOther?'':'display:none'}"><input type="text" data-ot="${q.id}" placeholder="Какво друго?" value="${esc(a.o||'')}"></div>`;
+    const nc=needsComment(q);
+    const hasC=!!a.c;
+    h+=`<div class="extra${nc&&!hasC?' need':''}" data-comment="${q.id}" style="${nc||hasC?'':'display:none'}"><textarea data-c="${q.id}" placeholder="${nc?'Опишете особеността':'Коментар (по желание)'}">${esc(a.c||'')}</textarea>${nc&&!hasC?'<div class="hint">Опишете накратко в какво е особеността.</div>':''}</div>`;
+    h+=`<button class="lnk" data-addc="${q.id}" style="${nc||hasC?'display:none':''}">+ коментар</button>`;
+  }
+  h+='</div></div></div>';
+  return h;
+}
+
+function build(){
+  document.getElementById('title').textContent='Въпросник преди среща'+(S.meta.client?' – '+S.meta.client:'');
+  document.title='Въпросник преди среща'+(S.meta.client?' – '+S.meta.client:'');
+  let h='', chips='';
+  FORM.areas.forEach(ar=>{
+    chips+=`<a class="chip" href="#a_${ar.code}" data-chip="${ar.code}">${esc(ar.title)} <span class="n" data-cn="${ar.code}"></span></a>`;
+    h+=`<section class="area" id="a_${ar.code}"><h2>${esc(ar.title)}</h2><p class="area-sub">${esc(ar.sub||'')}</p>`;
+    ar.processes.forEach((p,pi)=>{
+      h+=`<details class="proc" data-p="${p.id}"${pi===0?' open':''}><summary><span class="pt">${esc(p.title)}</span><span class="pc" data-pc="${p.id}"></span></summary>`;
+      if(p.desc) h+=`<div class="pd">${esc(p.desc)}</div>`;
+      p.questions.forEach(q=>{ h+=qHtml(q); });
+      h+='</details>';
+    });
+    h+='</section>';
+  });
+  document.getElementById('main').innerHTML=h;
+  document.getElementById('chips').innerHTML=chips+'<span class="total" id="total"></span>';
+  progress();
+}
+
+function progress(){
+  let T=0,D=0;
+  FORM.areas.forEach(ar=>{
+    let t=0,d=0;
+    ar.processes.forEach(p=>{
+      let pt=0,pd=0; p.questions.forEach(q=>{pt++; if(answered(q)) pd++;});
+      t+=pt; d+=pd;
+      const el=document.querySelector(`[data-pc="${p.id}"]`); if(el) el.textContent=pd+' / '+pt;
+      const pe=document.querySelector(`[data-p="${p.id}"]`); if(pe) pe.classList.toggle('done',pd===pt);
+    });
+    T+=t; D+=d;
+    const cn=document.querySelector(`[data-cn="${ar.code}"]`); if(cn) cn.textContent=d+'/'+t;
+    const ch=document.querySelector(`[data-chip="${ar.code}"]`); if(ch) ch.classList.toggle('done',d===t&&t>0);
+  });
+  document.getElementById('fill').style.width=(T?Math.round(D*100/T):0)+'%';
+  document.getElementById('total').textContent='Отговорени: '+D+' от '+T;
+  const left=T-D; document.getElementById('missing').textContent= left>0 ? ('Остават '+left+' неотговорени въпроса.') : 'Всички въпроси са отговорени. Благодарим!';
+}
+
+function refreshExtras(id){
+  const q=qById[id]; if(!q) return; const a=ans(id);
+  const nc=needsComment(q);
+  const ce=document.querySelector(`[data-comment="${id}"]`);
+  if(ce){ ce.style.display=(nc||a.c)?'':'none'; ce.classList.toggle('need',nc&&!a.c);
+    const ta=ce.querySelector('textarea'); if(ta) ta.placeholder=nc?'Опишете особеността':'Коментар (по желание)';
+    let hint=ce.querySelector('.hint');
+    if(nc&&!a.c){ if(!hint){ hint=document.createElement('div'); hint.className='hint'; hint.textContent='Опишете накратко в какво е особеността.'; ce.appendChild(hint);} }
+    else if(hint) hint.remove();
+  }
+  const lb=document.querySelector(`[data-addc="${id}"]`); if(lb) lb.style.display=(nc||a.c)?'none':'';
+  const oe=document.querySelector(`[data-other="${id}"]`); if(oe) oe.style.display=(q.type==='Множествен избор'&&Array.isArray(a.v)&&a.v.includes('Друго'))?'':'none';
+}
+
+const qById={};
+FORM.areas.forEach(ar=>ar.processes.forEach(p=>p.questions.forEach(q=>{q.area=ar.name;q.process=p.title;qById[q.id]=q;})));
+
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.m){ S.meta[t.dataset.m]=t.value; if(t.dataset.m==='client'){ document.getElementById('title').textContent='Въпросник преди среща'+(t.value?' – '+t.value:''); } save(); return; }
+  if(t.dataset.t){ ans(t.dataset.t).v=t.value; save(); progress(); return; }
+  if(t.dataset.c){ const a=ans(t.dataset.c); a.c=t.value; save(); const ce=t.closest('.extra'); if(ce&&needsComment(qById[t.dataset.c])){ ce.classList.toggle('need',!t.value.trim()); const h=ce.querySelector('.hint'); if(h) h.style.display=t.value.trim()?'none':''; } return; }
+  if(t.dataset.ot){ ans(t.dataset.ot).o=t.value; save(); return; }
+});
+document.addEventListener('change',e=>{
+  const t=e.target; const id=t.dataset.o; if(!id) return;
+  const q=qById[id]; const a=ans(id);
+  if(q.type==='Множествен избор'){
+    const set=new Set(Array.isArray(a.v)?a.v:[]); if(t.checked) set.add(t.value); else set.delete(t.value);
+    a.v=[...set];
+  } else { a.v=t.value; }
+  save(); refreshExtras(id); progress();
+});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-addc]'); if(!b) return; e.preventDefault();
+  const id=b.dataset.addc; const ce=document.querySelector(`[data-comment="${id}"]`);
+  ce.style.display=''; b.style.display='none'; ce.querySelector('textarea').focus();
+});
+
+function rows(){
+  const out=[];
+  FORM.areas.forEach(ar=>ar.processes.forEach(p=>p.questions.forEach(q=>{
+    const a=S.a[q.id]||{}; let v=a.v; if(Array.isArray(v)){ v=v.map(x=>x==='Друго'&&a.o?('Друго: '+a.o):x); }
+    out.push({id:q.id,area:ar.name,process:p.title,question:q.text,type:q.type,value:v==null?'':v,comment:a.c||'',
+      suggestedDecision:q.type==='Функция'&&a.v?SUGGEST[a.v]||'':(q.type==='Да/Не'&&a.v===DK?'Уточнява се':''),answered:answered(q)});
+  })));
+  return out;
+}
+function fname(ext){
+  const c=(S.meta.client||'klient').replace(/[^\p{L}\p{N}]+/gu,'_').replace(/^_+|_+$/g,'')||'klient';
+  return 'otgovori_'+c+'_'+new Date().toISOString().slice(0,10)+'.'+ext;
+}
+function download(blob,name){ const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),2000); }
+function say(t){ document.getElementById('msg').textContent=t; }
+
+const QP=new URLSearchParams(location.search);
+const SEND_TO_DEF='';   // имейл на получателя в ITC (попълва се от ITC Sales)
+const SEND_TO=(function(){ const r=(QP.get('r')||'').trim(); return /^\S+@\S+\.\S+$/.test(r)?r:SEND_TO_DEF; })();
+const XLSX_MIME='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+function payload(){ return {form:'ITC-QN',formId:FORM.id,version:FORM.version,exportedAt:new Date().toISOString(),meta:S.meta,answers:rows()}; }
+async function makeXlsxFile(){
+  if(typeof ExcelJS==='undefined') throw new Error('NOLIB');
+  const wb=new ExcelJS.Workbook(); const ws=wb.addWorksheet('Отговори');
+  ws.columns=[{header:'ID',width:11},{header:'Област',width:22},{header:'Процес',width:22},{header:'Въпрос',width:60},{header:'Отговор',width:40},{header:'Коментар',width:40}];
+  rows().forEach(r=>ws.addRow([r.id,r.area,r.process,r.question,Array.isArray(r.value)?r.value.join('; '):r.value,r.comment]));
+  const h=ws.getRow(1); h.font={bold:true,color:{argb:'FFFFFFFF'}}; h.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1F2937'}};
+  ws.eachRow(row=>{ row.alignment={wrapText:true,vertical:'top'}; });
+  ws.views=[{state:'frozen',ySplit:1}];
+  // скрит лист с пълните данни (чете се автоматично от ITC Sales)
+  const hd=wb.addWorksheet('_ITC'); hd.state='hidden';
+  const js=JSON.stringify(payload()); for(let i=0;i<js.length;i+=30000) hd.addRow([js.slice(i,i+30000)]);
+  const buf=await wb.xlsx.writeBuffer();
+  return new File([buf],fname('xlsx'),{type:XLSX_MIME});
+}
+function makeJsonFile(){ return new File([JSON.stringify(payload(),null,2)],fname('json'),{type:'application/json'}); }
+async function getFile(){
+  try{ return {file:await makeXlsxFile(),fallback:false}; }
+  catch(e){ if(e.message!=='NOLIB') console.error(e); return {file:makeJsonFile(),fallback:true}; }
+}
+function mailText(){
+  const c=S.meta.client||''; const r=S.meta.respondent||'';
+  return {
+    subject:'Въпросник преди среща'+(c?' – '+c:''),
+    body:'Здравейте,\n\nВъв файла са нашите отговори на въпросника преди среща'+(c?' ('+c+')':'')+'.\n\n'+(r?r+(S.meta.role?', '+S.meta.role:'')+'\n':'')
+  };
+}
+function isMobile(){ return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1); }
+function b64wrap(b64){ return b64.replace(/.{1,76}/g,'$&\r\n'); }
+function bytesToB64(u8){ let s='',ch=0x8000; for(let i=0;i<u8.length;i+=ch) s+=String.fromCharCode.apply(null,u8.subarray(i,i+ch)); return btoa(s); }
+function strToB64(str){ return bytesToB64(new TextEncoder().encode(str)); }
+async function buildEml(file,m){
+  const att=bytesToB64(new Uint8Array(await file.arrayBuffer()));
+  const bd='----=_ITC_'+Date.now().toString(36);
+  const isX=/\.xlsx$/i.test(file.name);
+  const fn='=?UTF-8?B?'+strToB64(file.name)+'?=';
+  const L=[];
+  L.push('X-Unsent: 1');
+  if(SEND_TO) L.push('To: '+SEND_TO);
+  L.push('Subject: =?UTF-8?B?'+strToB64(m.subject)+'?=');
+  L.push('MIME-Version: 1.0');
+  L.push('Content-Type: multipart/mixed; boundary="'+bd+'"');
+  L.push('');
+  L.push('--'+bd);
+  L.push('Content-Type: text/plain; charset=UTF-8');
+  L.push('Content-Transfer-Encoding: base64');
+  L.push('');
+  L.push(b64wrap(strToB64(m.body.replace(/\r?\n/g,'\r\n'))).replace(/\r\n$/,''));
+  L.push('--'+bd);
+  L.push('Content-Type: '+(isX?XLSX_MIME:'application/json')+'; name="'+fn+'"');
+  L.push('Content-Transfer-Encoding: base64');
+  L.push('Content-Disposition: attachment; filename="'+fn+'"');
+  L.push('');
+  L.push(b64wrap(att).replace(/\r\n$/,''));
+  L.push('--'+bd+'--');
+  L.push('');
+  return new Blob([L.join('\r\n')],{type:'message/rfc822'});
+}
+function openMailto(m){ location.href='mailto:'+encodeURIComponent(SEND_TO).replace('%40','@')+'?subject='+encodeURIComponent(m.subject)+'&body='+encodeURIComponent(m.body.replace(/\n/g,'\r\n')); }
+document.getElementById('sendBtn').onclick=async function(){
+  const btn=this; btn.disabled=true; say('Подготвям файла…'); const box=document.getElementById('sendOpts'); box.style.display='none';
+  try{
+    const {file,fallback}=await getFile(); const m=mailText();
+    if(isMobile() && navigator.canShare && navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file],title:m.subject,text:m.body}); say('Изберете пощенското си приложение – файлът е прикачен. Натиснете „Изпрати“ в него.'); return; }
+      catch(e){ if(e&&e.name==='AbortError'){ say('Изпращането е отказано.'); return; } }
+    }
+    const note=fallback?'<div style="margin-bottom:6px;color:var(--muted)">Excel не може да се създаде (няма връзка с интернет) – файлът ще е във формат JSON.</div>':'';
+    box.innerHTML=note+'<b>Каква поща ползвате?</b><div class="row" style="margin-top:8px">'+
+      '<button class="btn" id="optEml" type="button">Outlook или програма за поща в компютъра</button>'+
+      '<button class="btn ghost" id="optWeb" type="button">Gmail или поща в браузъра</button></div>'+
+      '<div style="margin-top:6px;color:var(--muted)">При първия избор получавате готов имейл с прикачен файл – само натискате „Изпрати“. При втория файлът се изтегля и ще го прикачите ръчно.</div>';
+    box.style.display=''; say('');
+    document.getElementById('optEml').onclick=async()=>{
+      const eml=await buildEml(file,m); download(eml,file.name.replace(/\.[^.]+$/,'')+'.eml');
+      say('Изтеглен е файл „'+file.name.replace(/\.[^.]+$/,'')+'.eml“. Отворете го (двоен клик) – в пощата ви се отваря готов имейл с прикачените отговори. Натиснете „Изпрати“.');
+    };
+    document.getElementById('optWeb').onclick=()=>{
+      download(file,file.name); setTimeout(()=>openMailto(m),400);
+      say('Файлът „'+file.name+'“ е изтеглен и имейлът се отваря. Прикачете файла от папка „Изтеглени“ и натиснете „Изпрати“.');
+    };
+  }catch(e){ say('Грешка: '+e.message); }
+  finally{ btn.disabled=false; }
+};
+document.getElementById('dlOnly').onclick=async function(){
+  const {file,fallback}=await getFile(); download(file,file.name);
+  say('Файлът „'+file.name+'“ е изтеглен'+(fallback?' (JSON – Excel не може да се създаде без интернет)':'')+'. Изпратете го по имейл на вашия консултант от ITC.');
+};
+let clr=0;
+document.getElementById('clearBtn').onclick=function(){
+  if(!clr){ clr=1; this.textContent='Сигурни ли сте? Натиснете пак'; setTimeout(()=>{clr=0; this.textContent='Изчисти всички отговори';},4000); return; }
+  clr=0; this.textContent='Изчисти всички отговори'; S.a={}; save(); build(); say('Отговорите са изчистени.');
+};
+
+load();
+if(QP.get('c') && !S.meta.client) S.meta.client=QP.get('c').slice(0,120);
+document.querySelectorAll('[data-m]').forEach(i=>{ i.value=S.meta[i.dataset.m]||''; });
+build();
+</script>
+</body>
+</html>
