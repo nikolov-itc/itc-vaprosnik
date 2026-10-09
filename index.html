@@ -328,11 +328,11 @@ document.getElementById('sendBtn').onclick=async function(){
     box.innerHTML=note+'<b>Каква поща ползвате?</b><div class="row" style="margin-top:8px">'+
       '<button class="btn" id="optEml" type="button">Outlook или програма за поща в компютъра</button>'+
       '<button class="btn ghost" id="optWeb" type="button">Gmail или поща в браузъра</button></div>'+
-      '<div style="margin-top:6px;color:var(--muted)">При първия избор получавате готов имейл с прикачен файл – само натискате „Изпрати“. При втория файлът се изтегля и ще го прикачите ръчно.</div>';
+      '<div style="margin-top:8px;color:var(--muted)"><b>Outlook или програма за поща:</b> изтегля се файл с готов имейл (с прикачени отговори). Отваряте го с двоен клик – появява се имейлът и остава само да натиснете „Изпрати“.<br><b>Gmail или поща в браузъра:</b> изтегля се Excel файлът и се отваря нов имейл – прикачвате файла ръчно от папка „Изтеглени“.</div>';
     box.style.display=''; say('');
     document.getElementById('optEml').onclick=async()=>{
       const eml=await buildEml(file,m); download(eml,file.name.replace(/\.[^.]+$/,'')+'.eml');
-      say('Изтеглен е файл „'+file.name.replace(/\.[^.]+$/,'')+'.eml“. Отворете го (двоен клик) – в пощата ви се отваря готов имейл с прикачените отговори. Натиснете „Изпрати“.');
+      say('Изтеглен е файл „'+file.name.replace(/\.[^.]+$/,'')+'.eml“ (вижте долу в браузъра или в папка „Изтеглени“). Кликнете върху него – отваря се имейл с вече прикачените отговори. Натиснете „Изпрати“. Ако не се отвори в Outlook, изберете „Gmail или поща в браузъра“.');
     };
     document.getElementById('optWeb').onclick=()=>{
       download(file,file.name); setTimeout(()=>openMailto(m),400);
